@@ -37,6 +37,12 @@ public class VehicleCreateRequest {
     @NotNull(message = "Mileage is required")
     @Min(value = 0, message = "Mileage cannot be negative")
     private Integer mileage;
+
+    @NotBlank(message = "Vehicle condition is required")
+    private String condition;
+
+    @Size(max = 2000, message = "More details must be 2000 characters or less")
+    private String moreDetails;
     
     @NotNull(message = "Images are required")
     @Size(min = 1, message = "At least one image is required")

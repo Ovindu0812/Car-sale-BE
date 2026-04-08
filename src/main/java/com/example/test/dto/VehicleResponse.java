@@ -28,6 +28,10 @@ public class VehicleResponse {
     private String gearType;
     
     private Integer mileage;
+
+    private String condition;
+
+    private String moreDetails;
     
     private List<String> images;
     

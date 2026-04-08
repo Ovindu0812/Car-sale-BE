@@ -39,6 +39,8 @@ public class VehicleService {
                     .year(request.getYear())
                     .gearType(request.getGearType())
                     .mileage(request.getMileage())
+                    .condition(request.getCondition())
+                    .moreDetails(request.getMoreDetails())
                     .images(request.getImages())
                     .available(true)
                     .createdAt(LocalDateTime.now())
@@ -109,6 +111,8 @@ public class VehicleService {
             vehicle.setYear(request.getYear());
             vehicle.setGearType(request.getGearType());
             vehicle.setMileage(request.getMileage());
+            vehicle.setCondition(request.getCondition());
+            vehicle.setMoreDetails(request.getMoreDetails());
             vehicle.setImages(request.getImages());
             vehicle.setUpdatedAt(LocalDateTime.now());
             
@@ -170,6 +174,8 @@ public class VehicleService {
                 .year(vehicle.getYear())
                 .gearType(vehicle.getGearType())
                 .mileage(vehicle.getMileage())
+                .condition(vehicle.getCondition())
+                .moreDetails(vehicle.getMoreDetails())
                 .images(vehicle.getImages())
                 .createdAt(vehicle.getCreatedAt())
                 .updatedAt(vehicle.getUpdatedAt())
