@@ -56,13 +56,15 @@ public class AuthenticationService {
     }
 
     public AuthResponse login(LoginRequest request) {
+        User user = userRepository.findByEmail(request.getEmail())
+            .orElseGet(() -> userRepository.findByUsername(request.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException("User not found")));
+
         Authentication authentication = authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+            new UsernamePasswordAuthenticationToken(user.getEmail(), request.getPassword())
         );
 
         String token = jwtService.generateToken((org.springframework.security.core.userdetails.UserDetails) authentication.getPrincipal());
-        User user = userRepository.findByEmail(request.getEmail())
-            .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         return AuthResponse.builder()
             .token(token)

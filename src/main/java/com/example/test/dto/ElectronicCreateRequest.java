@@ -11,33 +11,28 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class VehicleCreateRequest {
+public class ElectronicCreateRequest {
     
-    @NotBlank(message = "Vehicle name is required")
+    @NotBlank(message = "Item name is required")
     private String name;
     
-    @NotBlank(message = "Type is required")
-    private String type;
+    @NotBlank(message = "Item type is required")
+    private String type; // Phone, Laptop, Tablet, etc.
     
-    private String fuelType;
+    private String brand;
     
     @NotNull(message = "Price is required")
     @Positive(message = "Price must be a positive number")
     private Double price;
     
-    @Min(value = 1900, message = "Year must be 1900 or later")
-    @Max(value = 2100, message = "Year cannot be in the future")
-    private Integer year;
-    
-    private String gearType;
-    
-    @Min(value = 0, message = "Mileage cannot be negative")
-    private Integer mileage;
-
     private String condition;
-
+    
     @Size(max = 2000, message = "More details must be 2000 characters or less")
     private String moreDetails;
     
     private List<String> images;
+
+    private Boolean approved;
+    private Boolean postedByAdmin;
+    private String postedBy;
 }
