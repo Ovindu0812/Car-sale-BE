@@ -16,6 +16,7 @@ public class UserResponse {
     private String email;
     private String contactNumber;
     private Role role;
+    private String address;
     private Instant createdAt;
     private Instant updatedAt;
 }

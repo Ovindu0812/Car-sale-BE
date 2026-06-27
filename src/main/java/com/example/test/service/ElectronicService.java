@@ -60,7 +60,9 @@ public class ElectronicService {
     
     @Transactional(readOnly = true)
     public List<ElectronicResponse> getAllElectronics() {
+        boolean isAdmin = isCurrentUserAdmin();
         return electronicRepository.findAll().stream()
+                .filter(e -> isAdmin || Boolean.TRUE.equals(e.getApproved()))
                 .map(this::convertToResponse)
                 .collect(Collectors.toList());
     }
@@ -69,6 +71,9 @@ public class ElectronicService {
     public ElectronicResponse getElectronicById(String id) {
         Electronic electronic = electronicRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Electronic listing not found with ID: " + id));
+        if (!isCurrentUserAdmin() && !Boolean.TRUE.equals(electronic.getApproved())) {
+            throw new IllegalArgumentException("Electronic listing not found with ID: " + id);
+        }
         return convertToResponse(electronic);
     }
     
@@ -106,9 +111,21 @@ public class ElectronicService {
     
     @Transactional(readOnly = true)
     public List<ElectronicResponse> getElectronicsByType(String type) {
+        boolean isAdmin = isCurrentUserAdmin();
         return electronicRepository.findByType(type).stream()
+                .filter(e -> isAdmin || Boolean.TRUE.equals(e.getApproved()))
                 .map(this::convertToResponse)
                 .collect(Collectors.toList());
+    }
+
+    private boolean isCurrentUserAdmin() {
+        org.springframework.security.core.Authentication authentication = 
+            org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null) {
+            return false;
+        }
+        return authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
     }
     
     private ElectronicResponse convertToResponse(Electronic electronic) {

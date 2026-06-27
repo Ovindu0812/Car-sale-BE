@@ -47,6 +47,7 @@ public class AuthenticationService {
             .email(request.getEmail())
             .username(request.getUsername())
             .contactNumber(request.getContactNumber())
+            .address(request.getAddress())
             .password(passwordEncoder.encode(request.getPassword()))
             .role(Role.USER)
             .build();
@@ -84,6 +85,30 @@ public class AuthenticationService {
             .build();
     }
 
+    public UserResponse updateProfile(Authentication authentication, com.example.test.dto.UpdateProfileRequest request) {
+        User user = userRepository.findByEmail(authentication.getName())
+            .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        if (!user.getEmail().equals(request.getEmail()) && userRepository.existsByEmail(request.getEmail())) {
+            throw new com.example.test.exception.DuplicateEmailException("Email already exists");
+        }
+
+        if (!user.getUsername().equals(request.getUsername()) && userRepository.existsByUsername(request.getUsername())) {
+            throw new com.example.test.exception.DuplicateUsernameException("Username already exists");
+        }
+
+        user.setFirstName(request.getFirstName());
+        user.setLastName(request.getLastName());
+        user.setEmail(request.getEmail());
+        user.setUsername(request.getUsername());
+        user.setContactNumber(request.getContactNumber());
+        user.setAddress(request.getAddress());
+        user.setUpdatedAt(java.time.Instant.now());
+
+        User saved = userRepository.save(user);
+        return toUserResponse(saved);
+    }
+
     private UserResponse toUserResponse(User user) {
         return UserResponse.builder()
             .id(user.getId())
@@ -93,6 +118,7 @@ public class AuthenticationService {
             .email(user.getEmail())
             .contactNumber(user.getContactNumber())
             .role(user.getRole())
+            .address(user.getAddress())
             .createdAt(user.getCreatedAt())
             .updatedAt(user.getUpdatedAt())
             .build();

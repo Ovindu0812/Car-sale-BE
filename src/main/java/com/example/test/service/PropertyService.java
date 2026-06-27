@@ -59,7 +59,9 @@ public class PropertyService {
     
     @Transactional(readOnly = true)
     public List<PropertyResponse> getAllProperties() {
+        boolean isAdmin = isCurrentUserAdmin();
         return propertyRepository.findAll().stream()
+                .filter(p -> isAdmin || Boolean.TRUE.equals(p.getApproved()))
                 .map(this::convertToResponse)
                 .collect(Collectors.toList());
     }
@@ -68,6 +70,9 @@ public class PropertyService {
     public PropertyResponse getPropertyById(String id) {
         Property property = propertyRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Property not found with ID: " + id));
+        if (!isCurrentUserAdmin() && !Boolean.TRUE.equals(property.getApproved())) {
+            throw new IllegalArgumentException("Property not found with ID: " + id);
+        }
         return convertToResponse(property);
     }
     
@@ -98,9 +103,21 @@ public class PropertyService {
     
     @Transactional(readOnly = true)
     public List<PropertyResponse> getPropertiesByType(String type) {
+        boolean isAdmin = isCurrentUserAdmin();
         return propertyRepository.findByType(type).stream()
+                .filter(p -> isAdmin || Boolean.TRUE.equals(p.getApproved()))
                 .map(this::convertToResponse)
                 .collect(Collectors.toList());
+    }
+
+    private boolean isCurrentUserAdmin() {
+        org.springframework.security.core.Authentication authentication = 
+            org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null) {
+            return false;
+        }
+        return authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
     }
     
     private PropertyResponse convertToResponse(Property property) {

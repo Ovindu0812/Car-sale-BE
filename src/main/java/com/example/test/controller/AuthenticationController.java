@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -43,5 +44,13 @@ public class AuthenticationController {
     @GetMapping("/me")
     public ResponseEntity<UserResponse> me(Authentication authentication) {
         return ResponseEntity.ok(authenticationService.me(authentication));
+    }
+
+    @PutMapping("/me")
+    public ResponseEntity<UserResponse> updateProfile(
+        Authentication authentication,
+        @Valid @RequestBody com.example.test.dto.UpdateProfileRequest request
+    ) {
+        return ResponseEntity.ok(authenticationService.updateProfile(authentication, request));
     }
 }
